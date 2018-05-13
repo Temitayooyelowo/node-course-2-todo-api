@@ -20,7 +20,7 @@ app.post('/todos', (req, res) => {
   todo.save().then((doc) => {
     res.send(doc);
   }).catch((e) => {
-    res.status(404).send();
+    res.status(400).send();
   });
 
 });
@@ -66,7 +66,7 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
 
-    res.status(200).send(todo);
+    res.send({todo});
   }).catch((e) => {
     res.status(400).send();
   });
