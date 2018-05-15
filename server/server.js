@@ -23,7 +23,7 @@ app.post('/todos', (req, res) => {
   todo.save().then((doc) => {
     res.send(doc);
   }).catch((e) => {
-    res.status(400).send();
+    res.status(400).send(e);
   });
 
 });
@@ -52,7 +52,7 @@ app.get('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }).catch((e) => {
-    res.status(404).send();
+    res.status(404).send(e);
   });
 
 });
@@ -71,7 +71,7 @@ app.delete('/todos/:id', (req, res) => {
 
     res.send({todo});
   }).catch((e) => {
-    res.status(400).send();
+    res.status(400).send(e);
   });
 });
 
@@ -97,9 +97,31 @@ app.patch('/todos/:id', (req, res) => {
 
     res.send({todo});
   }).catch((e) => {
-    res.status(400).send();
+    res.status(400).send(e);
   });
 
+});
+
+app.post('/users', (req, res) => {
+  //create new instance of module then call save
+  //if things go well we return the doc, if things go poorly we send back the errors
+  //use pick to get the properties we want (email and pass) then pass to constructor and call save;
+
+  let body = _.pick(req.body, ['email', 'password']);
+  let user = new User(body);
+  /* Same as
+  let user = new User({
+    email: body.email,
+    password: body.password
+  });*/
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
 });
 
 app.listen(port, () => {
